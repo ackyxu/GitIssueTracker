@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+  
+
+  <body>
+	<p>Current Commit: <span id="currCommit"></span></p>
+	<div class="row">
+		<div class="column">
+			<button id='goodCommit'>Good Commit</button>
+		</div>
+			
+		<div class="column">
+			<button id='badCommit'>Bad Commit</button>
+		</div>
+	</div>
+	
+  </body>
+  
+  <script>
+	const {ipcRenderer} = require('electron')
+	const currCommitBox = document.getElementById("currCommit")
+	const goodButton = document.getElementById('goodCommit')
+	const badButton = document.getElementById('badCommit')
+	ipcRenderer.on("runbisectReturnc", (event,arg) => {
+		currCommitBox.innerText = arg.slice(0,7)
+	})
+
+	goodButton.onclick = () => {
+		ipcRenderer.send('bisectSendResult', 'Good')
+		ipcRenderer.send('closeBisectWindow','');
+		console.log('sent');
+	};
+
+
+	badButton.onclick = () => {
+		ipcRenderer.send('bisectSendResult', 'Bad')
+		ipcRenderer.send('closeBisectWindow','');
+		console.log('sent');
+	};
+
+
+  </script>
+
+  <head>
+	<link rel="stylesheet" type="text/css" href="index.css">
+    <meta charset="UTF-8" />
+    <title>Hello World!</title>
+	
+  </head>
+
+
+
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World!</title>
+
+  </head>
+  <body>
+	<div class="row">
+		<div class="column">
+			<h1>💖 Hello World!</h1>
+			<p>Welcome to your Electron application.</p>
+			<button id='gitlocbtn'>Choose location for .git</button>
+			<p>Current .git path:  <span id="filepath"></span></p>
+			<button id='runbisect'>Get Next Commit</button>
+		</div>
+		<div class="column">
+			
+			<div style="height:600px;background-color:
+				black;color:white;scrollbar-base-color:grey;
+				font-family:sans-serif;padding:10px;">
+				<p>Current Commit: <span id="currCommit"></span></p>
+				<p>Status for the current commit: </p>
+				<span id="currCommitStatus"></span>
+				<p>History:</p>
+				<p>Commit Hash &emsp; &emsp; Status</p>
+				<p style ="height:480px;overflow:auto;white-space:pre", id = "log"></p>
+			</div>
+		</div>
+	</div>
+  </body>
+  <script>
+	let currCommit = "";
+	let currStatus = "Good"
+	const filepath = document.getElementById("filepath");
+	const gitlocbtn = document.getElementById('gitlocbtn')
+	const runbisect = document.getElementById("runbisect")
+	const log = document.getElementById("log")
+	const {ipcRenderer} = require('electron')
+	const currCommitBox = document.getElementById("currCommit")
+	const currCommitStatus = document.getElementById("currCommitStatus")
+	
+	gitlocbtn.onclick = () => {
+		ipcRenderer.send('gitlocbtn','');
+		log.innerText = "";
+		currCommitStatus.innerText = "";
+		console.log('sent');
+	};
+	ipcRenderer.on("updatepath", (event, arg) => {
+		filepath.innerText = arg;
+	});
+	runbisect.onclick = () => {
+		ipcRenderer.send('runbisect','');
+		ipcRenderer.once("runbisectReturn", (event,arg) => {
+			currCommit = arg;
+			currCommitBox.innerText = currCommit.slice(0,7);
+
+		})
+
+	}
+
+	ipcRenderer.on('bisectGetResult', (event, arg) => {
+		currStatus = arg[0];
+		log.innerText += currCommit.slice(0,7)+ "\t\t\t"+currStatus + "\n";
+		currCommitStatus.innerText = arg[1]
+	})
+
+
+
+  </script>
+</html>

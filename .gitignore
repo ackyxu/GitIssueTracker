@@ -1,0 +1,6 @@
+# Persist Dir
+data/
+
+# Node
+node_modules/
+dist/
